@@ -25,32 +25,31 @@ void da_append(Lines *arr, String item) {
     arr->items[arr->count++] = item;
 }
 
-int find_num_breaks(Lines lines, int x, int y, bool **seen) {
-    if (seen[x][y]) 
-        return 0;
+uint64_t find_num_breaks(Lines lines, int x, int y, uint64_t **cache) {
+    if (cache[x][y])
+        return cache[x][y];
 
-    seen[x][y] = true;
     y++;
 
     assert(lines.count >= y);
 
     if (lines.count == y) {
-        return 0;
+        return 1;
     }
 
+    uint64_t acc = 0;
     if (lines.items[y].items[x] == '^') {
-        int acc = 1;
-
         if ((x - 1) >= 0)
-            acc += find_num_breaks(lines, x - 1, y, seen);
+            acc += find_num_breaks(lines, x - 1, y, cache);
         if ((x + 1) < lines.items[y].count)
-            acc += find_num_breaks(lines, x + 1, y, seen);
-
-        return acc;
+            acc += find_num_breaks(lines, x + 1, y, cache);
     } else {
         lines.items[y].items[x] = '|';
-        return find_num_breaks(lines, x, y, seen);
+        acc = find_num_breaks(lines, x, y, cache);
     }
+
+    cache[x][y] = acc;
+    return acc;
 }
 
 int main() {
@@ -79,18 +78,17 @@ int main() {
     }
 
     int w = lines.items[0].count;
-    bool **seen = (bool **)malloc(w * sizeof(bool *));
-    for (int i = 0; i < w; i++) {
-        seen[i] = (bool *)calloc(lines.count, sizeof(bool));
+    uint64_t **cache = (uint64_t **)malloc(w * sizeof(uint64_t *));
+    for (uint64_t i = 0; i < w; i++) {
+        cache[i] = (uint64_t *)calloc(lines.count, sizeof(uint64_t));
     }
 
+    printf("Answer %llu\n", find_num_breaks(lines, x, 0, cache));
 
-    printf("Answer %d\n", find_num_breaks(lines, x, 0, seen));
-
-    for (size_t i = 0; i < lines.count; i++) {
-        String line = lines.items[i];
-        printf("%.*s", (int)line.count, line.items);
-    }
+    // for (size_t i = 0; i < lines.count; i++) {
+    //     String line = lines.items[i];
+    //     printf("%.*s", (int)line.count, line.items);
+    // }
 
     return EXIT_SUCCESS;
 }
