@@ -11,8 +11,6 @@
 // 10080 (low)
 // 3150 (low)
 
-#define PAIRS 1000
-
 typedef struct Point {
     int x; 
     int y; 
@@ -99,7 +97,7 @@ void print_point(Point p) {
     printf("(%u, %u, %u)", p.x, p.y, p.z);
 }
 
-int run() {
+uint64_t run() {
     char *buf = NULL;
     size_t cap = 0;
     ssize_t len;
@@ -154,21 +152,21 @@ int run() {
     CircuitList circuts = {0};
 
     // Print pairs
-    for (size_t j = 0; j < PAIRS; j++) {
-        Point a = distances[i + j].a;
-        Point b = distances[i + j].b;
-        printf("%.2f ", distances[i + j].dist);
-        print_point(a);
-        print_point(b);
-        printf("\n");
-    }
-    printf("\n");
-    printf("\n");
-    printf("\n");
+    // for (size_t j = i; j < n; j++) {
+    //     Point a = distances[j].a;
+    //     Point b = distances[j].b;
+    //     printf("%.2f ", distances[j].dist);
+    //     print_point(a);
+    //     print_point(b);
+    //     printf("\n");
+    // }
+    // printf("\n");
+    // printf("\n");
+    // printf("\n");
 
 
     // Create circuts
-    for (size_t j = 0; j < PAIRS; j++) {
+    for (size_t j = 0; j < n; j++) {
         Point a = distances[i + j].a;
         Point b = distances[i + j].b;
 
@@ -224,10 +222,16 @@ int run() {
         }
 
         for (int i = 0; i < circuts.count; i++) {
-            for (int j = 0; j < circuts.items[i].count; j++) {
-                print_point(circuts.items[i].items[j]);
+            if (circuts.items[i].count == points.count) {
+                printf("a: %d\n", a.x);
+                printf("b: %d\n", b.x);
+                return (uint64_t)a.x * b.x;
             }
-            printf("\n");
+            // printf("%lu    ", circuts.items[i].count);
+            // for (int j = 0; j < circuts.items[i].count; j++) {
+            //     print_point(circuts.items[i].items[j]);
+            // }
+            // printf("\n");
         }
         printf("\n\n");
     }
@@ -241,16 +245,6 @@ int run() {
         printf("\n");
     }
 
-    size_t a = circuts.items[0].count;
-    size_t b = circuts.items[1].count;
-    size_t c = circuts.items[2].count;
-
-    printf("\n");
-    printf("%lu\n", a);
-    printf("%lu\n", b);
-    printf("%lu\n", c);
-    printf("Answer %lu\n", a * b * c);
-
     // Clean up
     free(points.items);
     free(distances);
@@ -259,5 +253,5 @@ int run() {
 }
 
 int main() {
-    return run();
+    printf("%llu\n", run());
 }
